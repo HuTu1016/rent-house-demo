@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.listing.mapper.ListingMapper">
+
+    <sql id="searchConditions">
+        WHERE l.publish_status = 'PUBLISHED' AND u.occupancy_status = 'VACANT'
+        <if test="query.district != null and query.district != ''">
+            AND l.district = #{query.district}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (l.title LIKE concat('%', #{query.keyword}, '%') OR l.community_name LIKE concat('%', #{query.keyword}, '%') OR l.address LIKE concat('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.minRentCent != null">
+            AND l.rent_cent &gt;= #{query.minRentCent}
+        </if>
+        <if test="query.maxRentCent != null">
+            AND l.rent_cent &lt;= #{query.maxRentCent}
+        </if>
+        <if test="query.rooms != null">
+            AND u.room_count = #{query.rooms}
+        </if>
+    </sql>
+
+    <select id="countListings" resultType="long">
+        SELECT COUNT(*)
+        FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+        <include refid="searchConditions"/>
+    </select>
+
+    <select id="searchListings" resultType="com.renthouse.listing.ListingView">
+        SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
+               u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
+               l.tags_json AS tagsJson, l.is_special AS isSpecial,
+               (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id ORDER BY m.sort_no LIMIT 1) AS coverUrl,
+               <choose>
+                   <when test="tenantId != null">
+                       EXISTS(SELECT 1 FROM tenant_favorite f WHERE f.tenant_id = #{tenantId} AND f.listing_id = l.id) AS favorite
+                   </when>
+                   <otherwise>
+                       0 AS favorite
+                   </otherwise>
+               </choose>
+        FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+        <include refid="searchConditions"/>
+        ORDER BY ${orderBy}
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="getListingDetail" resultType="map">
+        SELECT l.id, l.title, l.community_name, l.district, l.address, l.rent_cent, l.deposit_cent, l.tags_json, l.facilities_json, l.description, l.is_special,
+               u.room_count, u.hall_count, u.bathroom_count, u.area_sqm, u.orientation,
+               (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id ORDER BY m.sort_no LIMIT 1) AS cover_url,
+               <choose>
+                   <when test="tenantId != null">
+                       EXISTS(SELECT 1 FROM tenant_favorite f WHERE f.tenant_id = #{tenantId} AND f.listing_id = l.id) AS favorite
+                   </when>
+                   <otherwise>
+                       0 AS favorite
+                   </otherwise>
+               </choose>
+        FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+        WHERE l.id = #{listingId} AND l.publish_status = 'PUBLISHED'
+    </select>
+
+    <select id="getListingMedia" resultType="com.renthouse.listing.ListingDetailView$MediaView">
+        SELECT CAST(id AS CHAR) AS id, media_type AS type, url, cover_url AS coverUrl, sort_no AS sort
+        FROM listing_media
+        WHERE listing_id = #{listingId}
+        ORDER BY sort_no
+    </select>
+
+    <select id="countPublishedListing" resultType="int">
+        SELECT COUNT(*) FROM house_listing WHERE id = #{listingId} AND publish_status = 'PUBLISHED'
+    </select>
+
+    <insert id="insertFavorite">
+        INSERT IGNORE INTO tenant_favorite(tenant_id, listing_id, created_at)
+        VALUES (#{tenantId}, #{listingId}, #{createdAt})
+    </insert>
+
+    <delete id="deleteFavorite">
+        DELETE FROM tenant_favorite WHERE tenant_id = #{tenantId} AND listing_id = #{listingId}
+    </delete>
+
+    <select id="countHistoryOrFavorite" resultType="long">
+        SELECT COUNT(*) FROM ${table} WHERE tenant_id = #{tenantId}
+    </select>
+
+    <select id="listHistoryOrFavorite" resultType="com.renthouse.listing.ListingView">
+        SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
+               u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
+               l.tags_json AS tagsJson, l.is_special AS isSpecial,
+               (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id ORDER BY m.sort_no LIMIT 1) AS coverUrl,
+               1 AS favorite
+        FROM ${table} r
+        JOIN house_listing l ON l.id = r.listing_id
+        JOIN property_unit u ON u.id = l.unit_id
+        WHERE r.tenant_id = #{tenantId}
+        ORDER BY r.${timeColumn} DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <insert id="upsertHistory">
+        INSERT INTO tenant_browse_history(id, tenant_id, listing_id, viewed_at)
+        VALUES (#{id}, #{tenantId}, #{listingId}, #{viewedAt})
+        ON DUPLICATE KEY UPDATE viewed_at = VALUES(viewed_at)
+    </insert>
+
+</mapper>

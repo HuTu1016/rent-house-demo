@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.operation.mapper.PropertyMapper">
+    <insert id="insertBuilding">
+        INSERT INTO property_building(id, landlord_id, name, address, status, created_at, updated_at)
+        VALUES(#{id}, #{landlordId}, #{name}, #{address}, 'ACTIVE', #{now}, #{now})
+    </insert>
+    
+    <select id="countBuilding" resultType="int">
+        SELECT COUNT(*) FROM property_building WHERE id = #{id} AND landlord_id = #{landlordId}
+    </select>
+    
+    <insert id="insertUnit">
+        INSERT INTO property_unit(id, building_id, landlord_id, unit_no, title, room_count, hall_count, bathroom_count, area_sqm, occupancy_status, created_at, updated_at)
+        VALUES(#{id}, #{buildingId}, #{landlordId}, #{unitNo}, #{title}, #{rooms}, #{halls}, #{bathrooms}, #{areaSqm}, 'VACANT', #{now}, #{now})
+    </insert>
+</mapper>

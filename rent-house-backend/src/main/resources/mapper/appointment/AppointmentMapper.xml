@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.appointment.mapper.AppointmentMapper">
+
+    <select id="getLandlordIdByListing" resultType="java.lang.Long">
+        SELECT l.landlord_id
+        FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+        WHERE l.id = #{listingId} AND l.publish_status = 'PUBLISHED' AND u.occupancy_status = 'VACANT'
+    </select>
+
+    <insert id="insertAppointment">
+        INSERT INTO appointment(id, listing_id, tenant_id, landlord_id, conversation_id, scheduled_at, contact_name, contact_mobile, note, status, created_at, updated_at)
+        VALUES(#{id}, #{listingId}, #{tenantId}, #{landlordId}, #{conversationId}, #{scheduledAt}, #{contactName}, #{contactMobile}, #{note}, #{status}, #{now}, #{now})
+    </insert>
+
+    <insert id="insertChatMessage">
+        INSERT INTO chat_message(id, conversation_id, sender_id, message_type, content, appointment_id, created_at)
+        VALUES(#{id}, #{conversationId}, #{senderId}, #{messageType}, #{content}, #{appointmentId}, #{now})
+    </insert>
+
+    <update id="updateConversationMessage">
+        UPDATE conversation
+        SET last_message_preview = #{content}, last_message_at = #{now}, updated_at = #{now}
+        WHERE id = #{conversationId}
+    </update>
+
+    <select id="countAppointments" resultType="long">
+        SELECT COUNT(*) FROM appointment
+        WHERE ${ownerColumn} = #{userId}
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="listAppointments" resultType="com.renthouse.appointment.AppointmentView">
+        SELECT a.id, a.listing_id AS listingId, l.title AS listingTitle, a.tenant_id AS tenantId, t.nickname AS tenantName,
+               a.landlord_id AS landlordId, a.scheduled_at AS scheduledAt, a.contact_name AS contactName, a.contact_mobile AS contactMobile,
+               a.note, a.status, a.reject_reason AS rejectReason, a.created_at AS createdAt
+        FROM appointment a
+        JOIN house_listing l ON l.id = a.listing_id
+        JOIN sys_user t ON t.id = a.tenant_id
+        WHERE a.${ownerColumn} = #{userId}
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+        ORDER BY a.scheduled_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="findAppointment" resultType="com.renthouse.appointment.AppointmentView">
+        SELECT a.id, a.listing_id AS listingId, l.title AS listingTitle, a.tenant_id AS tenantId, t.nickname AS tenantName,
+               a.landlord_id AS landlordId, a.scheduled_at AS scheduledAt, a.contact_name AS contactName, a.contact_mobile AS contactMobile,
+               a.note, a.status, a.reject_reason AS rejectReason, a.created_at AS createdAt
+        FROM appointment a
+        JOIN house_listing l ON l.id = a.listing_id
+        JOIN sys_user t ON t.id = a.tenant_id
+        WHERE a.id = #{id} AND (a.tenant_id = #{userId} OR a.landlord_id = #{userId})
+    </select>
+
+    <update id="updateAppointmentStatus">
+        UPDATE appointment
+        SET status = #{status}, reject_reason = #{reason}, updated_at = #{now}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getConversationIdByAppointment" resultType="java.lang.Long">
+        SELECT conversation_id FROM appointment WHERE id = #{id}
+    </select>
+
+</mapper>

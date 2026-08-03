@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.operation.mapper.DashboardMapper">
+
+    <select id="countVacantUnits" resultType="long">
+        SELECT COUNT(*) FROM property_unit WHERE landlord_id = #{landlordId} AND occupancy_status = 'VACANT'
+    </select>
+
+    <select id="countOccupiedUnits" resultType="long">
+        SELECT COUNT(*) FROM property_unit WHERE landlord_id = #{landlordId} AND occupancy_status = 'OCCUPIED'
+    </select>
+
+    <select id="countPendingAppointments" resultType="long">
+        SELECT COUNT(*) FROM appointment WHERE landlord_id = #{landlordId} AND status = 'PENDING'
+    </select>
+
+</mapper>

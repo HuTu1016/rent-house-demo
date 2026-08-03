@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.tenant.mapper.TenantMapper">
+
+    <select id="getSpecials" resultType="com.renthouse.tenant.TenantController$Special">
+        SELECT id, title, rent_cent AS rentCent
+        FROM house_listing
+        WHERE publish_status = 'PUBLISHED' AND is_special = 1
+        ORDER BY special_sort
+        LIMIT 10
+    </select>
+
+    <select id="countPublishedListings" resultType="long">
+        SELECT COUNT(*) FROM house_listing WHERE publish_status = 'PUBLISHED'
+    </select>
+
+    <select id="countVacantUnits" resultType="long">
+        SELECT COUNT(*) FROM property_unit WHERE occupancy_status = 'VACANT'
+    </select>
+
+    <select id="getUserProfile" resultType="com.renthouse.tenant.TenantController$Profile">
+        SELECT nickname, avatar_url AS avatarUrl, mobile
+        FROM sys_user
+        WHERE id = #{id}
+    </select>
+
+    <select id="countFavorites" resultType="long">
+        SELECT COUNT(*) FROM tenant_favorite WHERE tenant_id = #{tenantId}
+    </select>
+
+    <select id="countHistories" resultType="long">
+        SELECT COUNT(*) FROM tenant_browse_history WHERE tenant_id = #{tenantId}
+    </select>
+
+</mapper>

@@ -1,23 +1,25 @@
 package com.renthouse.auth;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "sys_user")
+@TableName("sys_user")
 public class AppUser {
-    @Id private Long id;
-    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 24) private UserRole role;
+    @TableId private Long id;
+    private UserRole role;
     private String mobile;
-    @Column(name = "password_hash") private String passwordHash;
-    @Column(name = "wechat_openid") private String wechatOpenid;
-    @Column(nullable = false) private String nickname;
-    @Column(name = "avatar_url") private String avatarUrl;
-    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 24) private UserStatus status;
-    @Column(name = "last_login_at") private LocalDateTime lastLoginAt;
-    @Column(name = "created_at", nullable = false) private LocalDateTime createdAt;
-    @Column(name = "updated_at", nullable = false) private LocalDateTime updatedAt;
-    @Column(name = "deleted_at") private LocalDateTime deletedAt;
+    private String passwordHash;
+    private String wechatOpenid;
+    private String nickname;
+    private String avatarUrl;
+    private UserStatus status;
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    @TableLogic private LocalDateTime deletedAt;
 
     protected AppUser() { }
     public AppUser(Long id, UserRole role, String mobile, String passwordHash, String nickname) {

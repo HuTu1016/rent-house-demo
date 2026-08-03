@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.renthouse.operation.mapper.BlacklistMapper">
+
+    <select id="countAppointment" resultType="int">
+        SELECT COUNT(*) FROM appointment WHERE landlord_id = #{landlordId} AND tenant_id = #{tenantId}
+    </select>
+
+    <update id="blockUser">
+        UPDATE sys_user SET status = 'BLACKLISTED', updated_at = #{now} WHERE id = #{tenantId} AND role = 'TENANT'
+    </update>
+
+    <update id="blockProfile">
+        UPDATE tenant_profile SET blacklist_reason = #{reason}, blacklist_at = #{now}, updated_at = #{now} WHERE user_id = #{tenantId}
+    </update>
+
+    <update id="unblockUser">
+        UPDATE sys_user SET status = 'ACTIVE', updated_at = #{now} WHERE id = #{tenantId} AND role = 'TENANT'
+    </update>
+
+    <update id="unblockProfile">
+        UPDATE tenant_profile SET blacklist_reason = NULL, blacklist_at = NULL, updated_at = #{now} WHERE user_id = #{tenantId}
+    </update>
+
+</mapper>
