@@ -1,6 +1,6 @@
 package com.renthouse.conversation.mapper;
 
-import com.renthouse.conversation.ConversationView;
+import com.renthouse.conversation.vo.ConversationView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

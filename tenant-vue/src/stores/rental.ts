@@ -16,6 +16,7 @@ export const useRentalStore = defineStore('rental', () => {
   const appointments = ref<Appointment[]>([])
   const identity = ref<TenantIdentity>({ realName: '', idNumber: '', mobile: '', homeAddress: '', companyName: '', companyAddress: '' })
   const toast = ref('')
+  const connectionError = ref('')
   let toastTimer = 0
 
   const availableHouses = computed(() => houses.value.filter(h => h.status === 'vacant'))
@@ -41,9 +42,10 @@ export const useRentalStore = defineStore('rental', () => {
       houses.value = listingPage.records.map(api.mapListing)
       favorites.value = favoritePage.records.map(item => Number(item.id)); history.value = historyPage.records.map(item => Number(item.id)); appointments.value = appointmentPage.records.map(api.mapAppointment)
       identity.value = { realName: profile.realName ?? '', idNumber: '', mobile: profile.mobile ?? '', homeAddress: profile.homeAddress ?? '', companyName: profile.companyName ?? '', companyAddress: profile.companyAddress ?? '' }
-    } catch (error) { notify(error instanceof Error ? error.message : '后端服务暂不可用') }
+      connectionError.value = ''
+    } catch (error) { connectionError.value = error instanceof Error ? error.message : '后端服务暂不可用'; notify(connectionError.value) }
   }
   async function loadChat(houseId: number) { try { const conversation = await api.createConversation(houseId); const page = await api.fetchMessages(conversation.id); chats.value[houseId] = page.records.map(api.mapMessage) } catch (error) { notify(error instanceof Error ? error.message : '消息加载失败') } }
   async function loadHouseDetail(houseId: number) { try { const detail = await api.fetchListingDetail(houseId); const mapped = api.mapListing(detail.listing); const target = houses.value.find(item => item.id === houseId); if (target) Object.assign(target, { ...mapped, description: detail.description, amenities: detail.facilities, media: detail.media.map(item => ({ type: item.type.toLowerCase() === 'video' ? 'video' : 'image', url: item.url, poster: item.coverUrl })) }) } catch (error) { notify(error instanceof Error ? error.message : '房源详情加载失败') } }
-  return { houses, chats, favorites, history, compareList, filter, appointments, identity, toast, availableHouses, specialHouses, filteredHouses, price, getHouse, openHouse, toggleFavorite, toggleCompare, resetFilters, notify, sendMessage, bookViewing, updateIdentity, loadRemote, loadChat, loadHouseDetail }
+  return { houses, chats, favorites, history, compareList, filter, appointments, identity, toast, connectionError, availableHouses, specialHouses, filteredHouses, price, getHouse, openHouse, toggleFavorite, toggleCompare, resetFilters, notify, sendMessage, bookViewing, updateIdentity, loadRemote, loadChat, loadHouseDetail }
 })

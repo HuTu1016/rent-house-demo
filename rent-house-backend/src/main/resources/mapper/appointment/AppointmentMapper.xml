@@ -32,7 +32,7 @@
         </if>
     </select>
 
-    <select id="listAppointments" resultType="com.renthouse.appointment.AppointmentView">
+    <select id="listAppointments" resultType="com.renthouse.appointment.vo.AppointmentView">
         SELECT a.id, a.listing_id AS listingId, l.title AS listingTitle, a.tenant_id AS tenantId, t.nickname AS tenantName,
                a.agent_id AS agentId, a.scheduled_at AS scheduledAt, a.contact_name AS contactName, a.contact_mobile AS contactMobile,
                a.note, a.status, a.reject_reason AS rejectReason, a.created_at AS createdAt
@@ -47,7 +47,7 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="findAppointment" resultType="com.renthouse.appointment.AppointmentView">
+    <select id="findAppointment" resultType="com.renthouse.appointment.vo.AppointmentView">
         SELECT a.id, a.listing_id AS listingId, l.title AS listingTitle, a.tenant_id AS tenantId, t.nickname AS tenantName,
                a.agent_id AS agentId, a.scheduled_at AS scheduledAt, a.contact_name AS contactName, a.contact_mobile AS contactMobile,
                a.note, a.status, a.reject_reason AS rejectReason, a.created_at AS createdAt

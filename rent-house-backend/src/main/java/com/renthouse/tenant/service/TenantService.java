@@ -1,8 +1,8 @@
 package com.renthouse.tenant.service;
 
-import com.renthouse.tenant.TenantController.Home;
-import com.renthouse.tenant.TenantController.Profile;
-import com.renthouse.tenant.TenantController.IdentityRequest;
+import com.renthouse.tenant.controller.TenantController.Home;
+import com.renthouse.tenant.controller.TenantController.Profile;
+import com.renthouse.tenant.controller.TenantController.IdentityRequest;
 
 public interface TenantService {
     Home getHomeData();

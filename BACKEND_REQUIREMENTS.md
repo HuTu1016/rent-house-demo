@@ -19,11 +19,13 @@
 
 - JDK 17、Spring Boot 3、MySQL 8、Redis 7、Flyway。
 - MyBatis-Plus/MyBatis XML 作为唯一持久化方式，不使用 JPA。
-- 四层结构：
+- 四层结构按业务模块组织，每个模块固定使用 `controller`、`service`、`mapper`、`entity`，并将接口模型放入 `dto`、`vo`，状态枚举放入 `enums`：
   - `controller`：HTTP 参数校验、权限和响应包装。
-  - `service`：业务规则、事务和状态流转。
+  - `service`：业务规则、事务和状态流转；禁止被 Controller 之外的层绕过。
   - `mapper`：MyBatis 接口与 XML，只负责数据库读写。
-  - `domain/model`：实体、DTO、View、枚举和通用响应。
+  - `entity`：数据库实体和值对象；`dto` 为请求模型，`vo` 为响应模型，`enums` 为稳定状态码。
+
+示例目录：`com.renthouse.listing/{controller,entity,enums,mapper,service,dto,vo}`。`common` 仅存放全局响应、异常、配置和基础设施，不承载业务逻辑。
 - Controller 禁止直接使用 `JdbcTemplate` 或拼接 SQL。
 - 金额统一整数分；对外 ID 统一字符串；敏感资料使用密文列和脱敏列。
 - 中介角色代码为 `AGENT`，租客角色代码为 `TENANT`；数据库业务列使用 `agent_id`。

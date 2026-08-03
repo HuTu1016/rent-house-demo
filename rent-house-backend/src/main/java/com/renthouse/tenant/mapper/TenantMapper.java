@@ -1,7 +1,7 @@
 package com.renthouse.tenant.mapper;
 
-import com.renthouse.tenant.TenantController.Profile;
-import com.renthouse.tenant.TenantController.Special;
+import com.renthouse.tenant.controller.TenantController.Profile;
+import com.renthouse.tenant.controller.TenantController.Special;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,6 +15,6 @@ public interface TenantMapper {
     Profile getUserProfile(@Param("id") long id);
     long countFavorites(@Param("tenantId") long tenantId);
     long countHistories(@Param("tenantId") long tenantId);
-    void updateIdentity(@Param("tenantId") long tenantId, @Param("request") com.renthouse.tenant.TenantController.IdentityRequest request);
+    void updateIdentity(@Param("tenantId") long tenantId, @Param("request") com.renthouse.tenant.controller.TenantController.IdentityRequest request);
     Profile getTenantIdentityForAgent(@Param("agentId") long agentId, @Param("tenantId") long tenantId);
 }

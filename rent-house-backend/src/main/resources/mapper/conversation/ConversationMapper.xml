@@ -16,7 +16,7 @@
         VALUES(#{id}, #{listingId}, #{tenantId}, #{agentId}, #{now}, #{now})
     </insert>
 
-    <select id="findConversationView" resultType="com.renthouse.conversation.ConversationView">
+    <select id="findConversationView" resultType="com.renthouse.conversation.vo.ConversationView">
         SELECT c.id, c.listing_id AS listingId, l.title AS listingTitle,
                CASE WHEN c.tenant_id = #{userId} THEN CAST(lt.id AS CHAR) ELSE CAST(tt.id AS CHAR) END AS peerId,
                CASE WHEN c.tenant_id = #{userId} THEN lt.nickname ELSE tt.nickname END AS peerName,
@@ -32,7 +32,7 @@
         SELECT COUNT(*) FROM conversation c WHERE ${ownerColumn} = #{userId}
     </select>
 
-    <select id="listConversations" resultType="com.renthouse.conversation.ConversationView">
+    <select id="listConversations" resultType="com.renthouse.conversation.vo.ConversationView">
         SELECT c.id, c.listing_id AS listingId, l.title AS listingTitle,
                CASE WHEN c.tenant_id = #{userId} THEN CAST(lt.id AS CHAR) ELSE CAST(tt.id AS CHAR) END AS peerId,
                CASE WHEN c.tenant_id = #{userId} THEN lt.nickname ELSE tt.nickname END AS peerName,

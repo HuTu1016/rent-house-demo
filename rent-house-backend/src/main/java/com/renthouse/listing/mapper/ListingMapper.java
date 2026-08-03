@@ -1,8 +1,8 @@
 package com.renthouse.listing.mapper;
 
-import com.renthouse.listing.ListingDetailView;
-import com.renthouse.listing.ListingService.SearchQuery;
-import com.renthouse.listing.ListingView;
+import com.renthouse.listing.vo.ListingDetailView;
+import com.renthouse.listing.service.ListingService.SearchQuery;
+import com.renthouse.listing.vo.ListingView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

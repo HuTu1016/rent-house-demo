@@ -1,6 +1,6 @@
 package com.renthouse.common.config;
 
-import com.renthouse.auth.JwtAuthenticationFilter;
+import com.renthouse.auth.service.JwtAuthenticationFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

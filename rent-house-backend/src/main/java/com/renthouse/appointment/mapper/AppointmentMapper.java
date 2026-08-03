@@ -1,6 +1,6 @@
 package com.renthouse.appointment.mapper;
 
-import com.renthouse.appointment.AppointmentView;
+import com.renthouse.appointment.vo.AppointmentView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

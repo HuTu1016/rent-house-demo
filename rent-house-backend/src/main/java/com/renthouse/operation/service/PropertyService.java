@@ -1,7 +1,7 @@
 package com.renthouse.operation.service;
 
-import com.renthouse.operation.PropertyController.Building;
-import com.renthouse.operation.PropertyController.Unit;
+import com.renthouse.operation.controller.PropertyController.Building;
+import com.renthouse.operation.controller.PropertyController.Unit;
 
 public interface PropertyService {
     String createBuilding(Building r);

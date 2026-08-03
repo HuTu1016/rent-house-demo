@@ -27,7 +27,7 @@
         <include refid="searchConditions"/>
     </select>
 
-    <select id="searchListings" resultType="com.renthouse.listing.ListingView">
+    <select id="searchListings" resultType="com.renthouse.listing.vo.ListingView">
         SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
                u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
                l.tags_json AS tagsJson, l.is_special AS isSpecial,
@@ -62,7 +62,7 @@
         WHERE l.id = #{listingId} AND l.publish_status = 'PUBLISHED'
     </select>
 
-    <select id="getListingMedia" resultType="com.renthouse.listing.ListingDetailView$MediaView">
+    <select id="getListingMedia" resultType="com.renthouse.listing.vo.ListingDetailView$MediaView">
         SELECT CAST(id AS CHAR) AS id, media_type AS type, url, cover_url AS coverUrl, sort_no AS sort
         FROM listing_media
         WHERE listing_id = #{listingId}
@@ -86,7 +86,7 @@
         SELECT COUNT(*) FROM ${table} WHERE tenant_id = #{tenantId}
     </select>
 
-    <select id="listHistoryOrFavorite" resultType="com.renthouse.listing.ListingView">
+    <select id="listHistoryOrFavorite" resultType="com.renthouse.listing.vo.ListingView">
         SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
                u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
                l.tags_json AS tagsJson, l.is_special AS isSpecial,

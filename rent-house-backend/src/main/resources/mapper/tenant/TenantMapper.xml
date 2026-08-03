@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.renthouse.tenant.mapper.TenantMapper">
 
-    <select id="getSpecials" resultType="com.renthouse.tenant.TenantController$Special">
+    <select id="getSpecials" resultType="com.renthouse.tenant.controller.TenantController$Special">
         SELECT id, title, rent_cent AS rentCent
         FROM house_listing
         WHERE publish_status = 'PUBLISHED' AND is_special = 1
@@ -18,7 +18,7 @@
         SELECT COUNT(*) FROM property_unit WHERE occupancy_status = 'VACANT'
     </select>
 
-    <select id="getUserProfile" resultType="com.renthouse.tenant.TenantController$Profile">
+    <select id="getUserProfile" resultType="com.renthouse.tenant.controller.TenantController$Profile">
         SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
                i.real_name AS realName, i.id_number_masked AS idNumberMasked,
                i.home_address AS homeAddress, i.company_name AS companyName, i.company_address AS companyAddress
@@ -47,7 +47,7 @@
             company_address=VALUES(company_address), profile_status='COMPLETED', updated_at=NOW(3)
     </update>
 
-    <select id="getTenantIdentityForAgent" resultType="com.renthouse.tenant.TenantController$Profile">
+    <select id="getTenantIdentityForAgent" resultType="com.renthouse.tenant.controller.TenantController$Profile">
         SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
                i.real_name AS realName, i.id_number_masked AS idNumberMasked,
                i.home_address AS homeAddress, i.company_name AS companyName, i.company_address AS companyAddress
