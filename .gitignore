@@ -1,0 +1,23 @@
+# IDE & Editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Maven / Java Build
+**/target/
+*.class
+*.jar
+*.war
+
+# Node / Frontend Build
+**/node_modules/
+**/dist/
+**/dist-ssr/
+*.local
+
+# Logs & Storage
+*.log
+uploads/

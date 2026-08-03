@@ -1,0 +1,9 @@
+package com.renthouse.common.api;
+
+import java.util.List;
+
+public record PageResponse<T>(List<T> records, long total, int page, int size, boolean hasNext) {
+    public static <T> PageResponse<T> of(List<T> records, long total, int page, int size) {
+        return new PageResponse<>(records, total, page, size, (long) page * size < total);
+    }
+}

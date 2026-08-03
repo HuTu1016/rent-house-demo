@@ -1,0 +1,22 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import HouseCard from '../components/HouseCard.vue'
+import { useRentalStore } from '../stores/rental'
+const store = useRentalStore(); const router = useRouter(); const openPanel = ref<'location' | 'layout' | 'features' | 'sort' | null>(null)
+const locations = ['all', '水斗新围村', '水斗老围村', '富豪新村', '上油松']; const layouts = ['all', '单间', '大单间', '一房一厅', '二房一厅', '三房一厅']; const features = ['精装修', '公寓', '采光好', '通风好', '带阳台', '空调', '天然气', '洗衣机', '携宠入住', '半年起租', '一年起租', '短租']
+const title = (value: string, fallback: string) => value === 'all' ? fallback : value
+function open(id: number) { store.openHouse(id); router.push(`/house/${id}`) }; function chat(id: number) { router.push(`/messages/${id}`) }
+function apply() { openPanel.value = null }; function toggleFeature(value: string) { store.filter.features = store.filter.features.includes(value) ? store.filter.features.filter(item => item !== value) : [...store.filter.features, value] }
+</script>
+<template>
+  <section class="page home-page">
+    <header class="store-header"><div><h1>本地租房·水斗新围村</h1><p>🛡️ 店铺地址：创艺照相馆（欢迎随时来访）</p></div><span>•••</span></header>
+    <button class="community-card" @click="store.notify('欢迎加入！群内每日更新真实房源与周边闲置信息。')"><b>💬</b><span><strong>房东邀请你加入本地租房群，好物闲置群~</strong><small>等 128 位邻居已加入</small></span><i>立即进群</i></button>
+    <section v-if="store.specialHouses.length" class="special-zone"><div class="section-heading"><strong>🔥 房东特价特推置顶</strong><span>限时特惠</span></div><div class="special-scroll"><button v-for="house in store.specialHouses" :key="house.id" class="special-card" @click="open(house.id)"><img :src="house.image" alt="房源"/><span><strong>{{ house.name }}</strong><small>{{ house.layout }}</small><em>¥{{ (store.price(house) / 100).toLocaleString() }}/月</em></span></button></div></section>
+    <div class="list-heading"><h2>推荐房源</h2><span>共 <b>{{ store.filteredHouses.length }}</b> 套在租</span></div>
+    <div class="filters"><button :class="{ selected: openPanel === 'location', active: store.filter.location !== 'all' }" @click="openPanel = openPanel === 'location' ? null : 'location'">{{ title(store.filter.location, '位置') }}</button><button :class="{ selected: openPanel === 'layout', active: store.filter.layout !== 'all' }" @click="openPanel = openPanel === 'layout' ? null : 'layout'">{{ title(store.filter.layout, '户型') }}</button><button :class="{ selected: openPanel === 'features', active: store.filter.features.length }" @click="openPanel = openPanel === 'features' ? null : 'features'">{{ store.filter.features.length ? `筛选(${store.filter.features.length})` : '筛选' }}</button><button :class="{ selected: openPanel === 'sort', active: store.filter.sort !== 'default' }" @click="openPanel = openPanel === 'sort' ? null : 'sort'">排序</button></div>
+    <div v-if="openPanel" class="filter-backdrop" @click="openPanel = null"><div class="filter-panel" @click.stop><template v-if="openPanel === 'location'"><button v-for="item in locations" :key="item" class="pill" :class="{ picked: store.filter.location === item }" @click="store.filter.location = item">{{ title(item, '不限') }}</button></template><template v-else-if="openPanel === 'layout'"><button v-for="item in layouts" :key="item" class="pill" :class="{ picked: store.filter.layout === item }" @click="store.filter.layout = item">{{ title(item, '不限') }}</button></template><template v-else-if="openPanel === 'features'"><button v-for="item in features" :key="item" class="pill" :class="{ picked: store.filter.features.includes(item) }" @click="toggleFeature(item)">{{ item }}</button></template><template v-else><button v-for="item in [['default','默认排序'],['priceAsc','价格从低到高'],['priceDesc','价格从高到低'],['newest','最近发布']]" :key="item[0]" class="sort-row" :class="{ picked: store.filter.sort === item[0] }" @click="store.filter.sort = item[0] as typeof store.filter.sort; apply()">{{ item[1] }}</button></template><div class="filter-actions"><button @click="store.resetFilters(); openPanel = null">重置</button><button @click="apply">确定</button></div></div></div>
+    <div v-if="store.filteredHouses.length" class="house-list"><HouseCard v-for="house in store.filteredHouses" :key="house.id" :house="house" @open="open" @chat="chat" /></div><div v-else class="empty-state">🔍 没有找到匹配条件的房源<br/><button @click="store.resetFilters()">清空筛选条件</button></div>
+  </section>
+</template>

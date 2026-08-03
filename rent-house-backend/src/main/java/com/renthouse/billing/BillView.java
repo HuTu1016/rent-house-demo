@@ -1,0 +1,1 @@
+package com.renthouse.billing; import java.time.*; public record BillView(String id,String billNo,String contractId,String tenantId,String landlordId,String billType,int amountCent,LocalDate dueDate,String status,LocalDateTime paidAt,LocalDateTime verifiedAt,String remark){}
