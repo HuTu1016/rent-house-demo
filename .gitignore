@@ -21,3 +21,4 @@
 # Logs & Storage
 *.log
 uploads/
+/rent-house-backend/.mvn-repository/com/baomidou/mybatis-plus/3.5.7/_remote.repositories

@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper
 public interface AppointmentMapper {
 
-    Long getLandlordIdByListing(@Param("listingId") long listingId);
+    Long getAgentIdByListing(@Param("listingId") long listingId);
 
     void insertAppointment(
             @Param("id") long id, @Param("listingId") long listingId, @Param("tenantId") long tenantId,
-            @Param("landlordId") long landlordId, @Param("conversationId") long conversationId,
+            @Param("agentId") long agentId, @Param("conversationId") long conversationId,
             @Param("scheduledAt") LocalDateTime scheduledAt, @Param("contactName") String contactName,
             @Param("contactMobile") String contactMobile, @Param("note") String note,
             @Param("status") String status, @Param("now") LocalDateTime now

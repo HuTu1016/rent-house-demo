@@ -9,6 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
     @Bean
     OpenAPI rentHouseOpenApi() {
-        return new OpenAPI().info(new Info().title("租房演示系统 API").version("v1").description("租客端与房东端业务闭环；支付仅支持线下报备与人工核销。"));
+        return new OpenAPI().info(new Info().title("租房演示系统 API").version("v1").description("中介房源发布、租客浏览咨询和预约看房业务。"));
     }
 }

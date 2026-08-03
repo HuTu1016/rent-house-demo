@@ -11,11 +11,11 @@ import java.util.Map;
 @Mapper
 public interface ConversationMapper {
 
-    Long getLandlordIdByListing(@Param("listingId") long listingId);
+    Long getAgentIdByListing(@Param("listingId") long listingId);
 
-    Long getConversationIdByListingAndUsers(@Param("listingId") long listingId, @Param("tenantId") long tenantId, @Param("landlordId") long landlordId);
+    Long getConversationIdByListingAndUsers(@Param("listingId") long listingId, @Param("tenantId") long tenantId, @Param("agentId") long agentId);
 
-    void insertConversation(@Param("id") long id, @Param("listingId") long listingId, @Param("tenantId") long tenantId, @Param("landlordId") long landlordId, @Param("now") LocalDateTime now);
+    void insertConversation(@Param("id") long id, @Param("listingId") long listingId, @Param("tenantId") long tenantId, @Param("agentId") long agentId, @Param("now") LocalDateTime now);
 
     ConversationView findConversationView(@Param("conversationId") long conversationId, @Param("userId") long userId);
 

@@ -19,9 +19,11 @@
     </select>
 
     <select id="getUserProfile" resultType="com.renthouse.tenant.TenantController$Profile">
-        SELECT nickname, avatar_url AS avatarUrl, mobile
-        FROM sys_user
-        WHERE id = #{id}
+        SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
+               i.real_name AS realName, i.id_number_masked AS idNumberMasked,
+               i.home_address AS homeAddress, i.company_name AS companyName, i.company_address AS companyAddress
+        FROM sys_user u LEFT JOIN tenant_identity_profile i ON i.user_id = u.id
+        WHERE u.id = #{id}
     </select>
 
     <select id="countFavorites" resultType="long">
@@ -30,6 +32,28 @@
 
     <select id="countHistories" resultType="long">
         SELECT COUNT(*) FROM tenant_browse_history WHERE tenant_id = #{tenantId}
+    </select>
+
+    <update id="updateIdentity">
+        INSERT INTO tenant_identity_profile(user_id, real_name, id_number_cipher, id_number_masked,
+            mobile_cipher, mobile_hash, home_address, company_name, company_address, profile_status, created_at, updated_at)
+        VALUES(#{tenantId}, #{request.realName}, SHA2(#{request.idNumber}, 256),
+            CONCAT(LEFT(#{request.idNumber}, 3), '***********', RIGHT(#{request.idNumber}, 4)),
+            #{request.mobile}, SHA2(#{request.mobile}, 256), #{request.homeAddress}, #{request.companyName},
+            #{request.companyAddress}, 'COMPLETED', NOW(3), NOW(3))
+        ON DUPLICATE KEY UPDATE real_name=VALUES(real_name), id_number_cipher=VALUES(id_number_cipher),
+            id_number_masked=VALUES(id_number_masked), mobile_cipher=VALUES(mobile_cipher),
+            mobile_hash=VALUES(mobile_hash), home_address=VALUES(home_address), company_name=VALUES(company_name),
+            company_address=VALUES(company_address), profile_status='COMPLETED', updated_at=NOW(3)
+    </update>
+
+    <select id="getTenantIdentityForAgent" resultType="com.renthouse.tenant.TenantController$Profile">
+        SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
+               i.real_name AS realName, i.id_number_masked AS idNumberMasked,
+               i.home_address AS homeAddress, i.company_name AS companyName, i.company_address AS companyAddress
+        FROM sys_user u JOIN tenant_identity_profile i ON i.user_id = u.id
+        WHERE u.id = #{tenantId} AND u.role = 'TENANT'
+          AND EXISTS (SELECT 1 FROM appointment a WHERE a.tenant_id = u.id AND a.agent_id = #{agentId})
     </select>
 
 </mapper>

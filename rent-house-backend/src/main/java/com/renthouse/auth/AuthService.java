@@ -34,20 +34,6 @@ public class AuthService {
         return issue(user);
     }
 
-    @Transactional
-    public TokenView demoLogin(UserRole role) {
-        UserRole selectedRole = role == null ? UserRole.TENANT : role;
-        String mobile = selectedRole == UserRole.LANDLORD ? "13800000001" : "13800000002";
-        AppUser user = userMapper.findByMobileAndDeletedAtIsNull(mobile).orElseGet(() -> {
-            AppUser created = new AppUser(idGenerator.nextId(), selectedRole, mobile, passwordEncoder.encode("demo123"), selectedRole == UserRole.LANDLORD ? "演示房东" : "演示租客");
-            userMapper.insert(created);
-            return created;
-        });
-        user.markLoggedIn();
-        userMapper.updateById(user);
-        return issue(user);
-    }
-
     @Transactional(readOnly = true)
     public TokenView refresh(String refreshToken) {
         AuthenticatedUser principal;

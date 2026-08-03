@@ -146,53 +146,6 @@ button {
   margin: 5px 0 0;
 }
 
-.community-card {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 14px;
-  margin: 10px 0 12px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-}
-
-.community-card b {
-  font-size: 22px;
-}
-
-.community-card span {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.community-card strong {
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.community-card small {
-  font-size: 10px;
-  color: var(--muted);
-}
-
-.community-card i {
-  font-style: normal;
-  color: #fff;
-  background: var(--blue);
-  border-radius: 16px;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
 
 /* 特价置顶区 */
 .section-heading, .list-heading {
@@ -688,7 +641,7 @@ button {
   white-space: nowrap;
 }
 
-.ask-landlord-btn {
+.ask-agent-btn {
   border: none;
   background: #ffcc00;
   color: #1d1d1f;
@@ -702,7 +655,7 @@ button {
   flex-shrink: 0;
 }
 
-.ask-landlord-btn:active {
+.ask-agent-btn:active {
   transform: scale(0.95);
 }
 
@@ -1203,7 +1156,7 @@ button {
   background: var(--blue);
 }
 
-.bubble.landlord {
+.bubble.agent {
   align-self: flex-start;
   background: #fff;
   border: 1px solid var(--line);

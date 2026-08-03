@@ -15,4 +15,6 @@ public interface TenantMapper {
     Profile getUserProfile(@Param("id") long id);
     long countFavorites(@Param("tenantId") long tenantId);
     long countHistories(@Param("tenantId") long tenantId);
+    void updateIdentity(@Param("tenantId") long tenantId, @Param("request") com.renthouse.tenant.TenantController.IdentityRequest request);
+    Profile getTenantIdentityForAgent(@Param("agentId") long agentId, @Param("tenantId") long tenantId);
 }

@@ -32,14 +32,14 @@ public class AppointmentService {
         if (!cmd.scheduledAt().isAfter(LocalDateTime.now()))
             throw new BusinessException("APPOINTMENT_TIME_INVALID", "预约时间必须晚于当前时间", HttpStatus.BAD_REQUEST);
 
-        Long landlordId = mapper.getLandlordIdByListing(listingId);
-        if (landlordId == null) throw new BusinessException("LISTING_NOT_AVAILABLE", "房源暂不可预约", HttpStatus.CONFLICT);
+        Long agentId = mapper.getAgentIdByListing(listingId);
+        if (agentId == null) throw new BusinessException("LISTING_NOT_AVAILABLE", "房源暂不可预约", HttpStatus.CONFLICT);
 
         long conversationId = Long.parseLong(conversations.getOrCreateForTenant(listingId).id());
         long id = ids.nextId();
         LocalDateTime now = LocalDateTime.now();
 
-        mapper.insertAppointment(id, listingId, tenant.id(), landlordId, conversationId, cmd.scheduledAt(), cmd.contactName(), cmd.contactMobile(), cmd.note(), "PENDING", now);
+        mapper.insertAppointment(id, listingId, tenant.id(), agentId, conversationId, cmd.scheduledAt(), cmd.contactName(), cmd.contactMobile(), cmd.note(), "PENDING", now);
         
         String text = "已提交看房预约";
         mapper.insertChatMessage(ids.nextId(), conversationId, tenant.id(), "APPOINTMENT", text, id, now);
@@ -54,7 +54,7 @@ public class AppointmentService {
         size = Math.min(50, Math.max(1, size));
         int offset = (page - 1) * size;
 
-        String ownerColumn = user.role() == UserRole.LANDLORD ? "landlord_id" : "tenant_id";
+        String ownerColumn = user.role() == UserRole.AGENT ? "agent_id" : "tenant_id";
         long total = mapper.countAppointments(ownerColumn, user.id(), status);
         List<AppointmentView> result = mapper.listAppointments(ownerColumn, user.id(), status, offset, size);
 
@@ -67,12 +67,12 @@ public class AppointmentService {
         AppointmentView view = find(id);
         AppointmentStatus current = AppointmentStatus.valueOf(view.status());
 
-        boolean landlord = user.role() == UserRole.LANDLORD && Long.parseLong(view.landlordId()) == user.id();
+        boolean agent = user.role() == UserRole.AGENT && Long.parseLong(view.agentId()) == user.id();
         boolean tenant = user.role() == UserRole.TENANT && Long.parseLong(view.tenantId()) == user.id();
 
-        boolean allowed = (landlord && current == AppointmentStatus.PENDING && (status == AppointmentStatus.CONFIRMED || status == AppointmentStatus.DECLINED)) ||
+        boolean allowed = (agent && current == AppointmentStatus.PENDING && (status == AppointmentStatus.CONFIRMED || status == AppointmentStatus.DECLINED)) ||
                 (tenant && current == AppointmentStatus.PENDING && status == AppointmentStatus.CANCELLED) ||
-                (landlord && current == AppointmentStatus.CONFIRMED && status == AppointmentStatus.COMPLETED);
+                (agent && current == AppointmentStatus.CONFIRMED && status == AppointmentStatus.COMPLETED);
 
         if (!allowed) throw new BusinessException("APPOINTMENT_TRANSITION_INVALID", "当前状态不可执行该操作", HttpStatus.CONFLICT);
 

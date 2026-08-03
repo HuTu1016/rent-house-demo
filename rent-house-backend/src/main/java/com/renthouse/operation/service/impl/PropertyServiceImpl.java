@@ -27,7 +27,7 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     @Transactional
     public String createBuilding(Building r) {
-        CurrentUser.requireRole(UserRole.LANDLORD);
+        CurrentUser.requireRole(UserRole.AGENT);
         long id = ids.nextId();
         mapper.insertBuilding(id, CurrentUser.require().id(), r.name(), r.address(), LocalDateTime.now());
         return String.valueOf(id);
@@ -36,7 +36,7 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     @Transactional
     public String createUnit(Unit r) {
-        CurrentUser.requireRole(UserRole.LANDLORD);
+        CurrentUser.requireRole(UserRole.AGENT);
         long owner = CurrentUser.require().id();
         int exists = mapper.countBuilding(r.buildingId(), owner);
         if (exists == 0) {

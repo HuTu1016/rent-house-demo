@@ -33,14 +33,14 @@ public class ConversationService {
         AppUser tenant = java.util.Optional.ofNullable(users.selectById(tenantId)).orElseThrow();
         if (tenant.getStatus() != UserStatus.ACTIVE) throw new BusinessException("CHAT_BLOCKED", "当前账号无法发起会话", HttpStatus.FORBIDDEN);
 
-        Long landlordId = mapper.getLandlordIdByListing(listingId);
-        if (landlordId == null) throw new BusinessException("LISTING_NOT_FOUND", "房源不可联系", HttpStatus.NOT_FOUND);
+        Long agentId = mapper.getAgentIdByListing(listingId);
+        if (agentId == null) throw new BusinessException("LISTING_NOT_FOUND", "房源不可联系", HttpStatus.NOT_FOUND);
 
-        Long conversationId = mapper.getConversationIdByListingAndUsers(listingId, tenantId, landlordId);
+        Long conversationId = mapper.getConversationIdByListingAndUsers(listingId, tenantId, agentId);
         if (conversationId == null) {
             conversationId = ids.nextId();
             LocalDateTime now = LocalDateTime.now();
-            mapper.insertConversation(conversationId, listingId, tenantId, landlordId, now);
+            mapper.insertConversation(conversationId, listingId, tenantId, agentId, now);
         }
         return mapper.findConversationView(conversationId, tenantId);
     }
@@ -50,7 +50,7 @@ public class ConversationService {
         page = Math.max(1, page);
         size = Math.min(50, Math.max(1, size));
         int offset = (page - 1) * size;
-        String ownerColumn = user.role() == UserRole.LANDLORD ? "c.landlord_id" : "c.tenant_id";
+        String ownerColumn = user.role() == UserRole.AGENT ? "c.agent_id" : "c.tenant_id";
 
         long total = mapper.countConversations(ownerColumn, user.id());
         List<ConversationView> list = mapper.listConversations(ownerColumn, user.id(), offset, size);

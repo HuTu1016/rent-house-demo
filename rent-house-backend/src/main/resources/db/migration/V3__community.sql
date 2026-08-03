@@ -1,3 +1,1 @@
-CREATE TABLE IF NOT EXISTS community_config (id BIGINT PRIMARY KEY, landlord_id BIGINT NOT NULL, title VARCHAR(128) NOT NULL, description VARCHAR(500), image_url VARCHAR(512), join_url VARCHAR(512), enabled TINYINT(1) NOT NULL DEFAULT 1, member_count INT NOT NULL DEFAULT 0, updated_at DATETIME(3) NOT NULL, KEY idx_community_landlord (landlord_id));
-CREATE TABLE IF NOT EXISTS community_join_event (id BIGINT PRIMARY KEY, community_id BIGINT NOT NULL, user_id BIGINT, created_at DATETIME(3) NOT NULL, KEY idx_community_event (community_id,created_at));
-INSERT IGNORE INTO community_config(id,landlord_id,title,description,image_url,join_url,enabled,member_count,updated_at) VALUES(6001,1001,'云栖租房社群','进群获取看房通知、租房攻略与房源上新提醒',NULL,'https://example.com/community',1,128,NOW(3));
+-- Retained migration version for Flyway history; community schema is intentionally not created.

@@ -1,2 +1,18 @@
-package com.renthouse.file;import com.renthouse.auth.*;import com.renthouse.common.api.*;import com.renthouse.common.exception.BusinessException;import com.renthouse.common.id.SnowflakeIdGenerator;import java.io.*;import java.nio.file.*;import org.springframework.beans.factory.annotation.Value;import org.springframework.http.*;import org.springframework.util.StringUtils;import org.springframework.web.bind.annotation.*;import org.springframework.web.multipart.MultipartFile;
-@RestController @RequestMapping("/v1/files")public class FileController{private final SnowflakeIdGenerator ids;private final Path root;public FileController(SnowflakeIdGenerator ids,@Value("${app.storage.local-dir}")String dir){this.ids=ids;this.root=Paths.get(dir).toAbsolutePath().normalize();}@PostMapping(value="/upload",consumes=MediaType.MULTIPART_FORM_DATA_VALUE)public ApiResponse<Item>upload(@RequestPart("file")MultipartFile f)throws IOException{CurrentUser.require();if(f.isEmpty()||f.getSize()>20*1024*1024)throw new BusinessException("FILE_INVALID","文件不能为空且不得超过20MB",HttpStatus.BAD_REQUEST);String ext=StringUtils.getFilenameExtension(f.getOriginalFilename());String name=ids.nextId()+(ext==null?"":"."+ext);Files.createDirectories(root);Files.copy(f.getInputStream(),root.resolve(name),StandardCopyOption.REPLACE_EXISTING);return ApiResponse.ok(new Item(name,"/api/v1/files/"+name+"/access-url",f.getContentType(),f.getSize()));}@GetMapping("/{id}/access-url")public ResponseEntity<byte[]>get(@PathVariable String id)throws IOException{CurrentUser.require();Path p=root.resolve(id).normalize();if(!p.startsWith(root)||!Files.exists(p))throw new BusinessException("FILE_NOT_FOUND","文件不存在",HttpStatus.NOT_FOUND);return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(Files.readAllBytes(p));}public record Item(String fileId,String accessUrl,String contentType,long size){}}
+package com.renthouse.file;
+
+import com.renthouse.common.api.ApiResponse;
+import java.io.IOException;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequestMapping("/v1/files")
+public class FileController {
+    private final FileService service;
+    public FileController(FileService service) { this.service = service; }
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<FileService.FileView> upload(@RequestPart("file") MultipartFile file) throws IOException { return ApiResponse.ok(service.upload(file)); }
+    @GetMapping("/{id}/access-url")
+    public ResponseEntity<byte[]> read(@PathVariable String id) throws IOException { return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(service.read(id)); }
+}

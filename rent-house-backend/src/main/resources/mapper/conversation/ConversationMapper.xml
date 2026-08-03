@@ -2,18 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.renthouse.conversation.mapper.ConversationMapper">
 
-    <select id="getLandlordIdByListing" resultType="java.lang.Long">
-        SELECT landlord_id FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+    <select id="getAgentIdByListing" resultType="java.lang.Long">
+        SELECT agent_id FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
         WHERE l.id = #{listingId} AND l.publish_status = 'PUBLISHED' AND u.occupancy_status = 'VACANT'
     </select>
 
     <select id="getConversationIdByListingAndUsers" resultType="java.lang.Long">
-        SELECT id FROM conversation WHERE listing_id = #{listingId} AND tenant_id = #{tenantId} AND landlord_id = #{landlordId}
+        SELECT id FROM conversation WHERE listing_id = #{listingId} AND tenant_id = #{tenantId} AND agent_id = #{agentId}
     </select>
 
     <insert id="insertConversation">
-        INSERT INTO conversation(id, listing_id, tenant_id, landlord_id, created_at, updated_at)
-        VALUES(#{id}, #{listingId}, #{tenantId}, #{landlordId}, #{now}, #{now})
+        INSERT INTO conversation(id, listing_id, tenant_id, agent_id, created_at, updated_at)
+        VALUES(#{id}, #{listingId}, #{tenantId}, #{agentId}, #{now}, #{now})
     </insert>
 
     <select id="findConversationView" resultType="com.renthouse.conversation.ConversationView">
@@ -24,7 +24,7 @@
         FROM conversation c
         JOIN house_listing l ON l.id = c.listing_id
         JOIN sys_user tt ON tt.id = c.tenant_id
-        JOIN sys_user lt ON lt.id = c.landlord_id
+        JOIN sys_user lt ON lt.id = c.agent_id
         WHERE c.id = #{conversationId}
     </select>
 
@@ -41,7 +41,7 @@
         FROM conversation c
         JOIN house_listing l ON l.id = c.listing_id
         JOIN sys_user tt ON tt.id = c.tenant_id
-        JOIN sys_user lt ON lt.id = c.landlord_id
+        JOIN sys_user lt ON lt.id = c.agent_id
         WHERE ${ownerColumn} = #{userId}
         ORDER BY c.last_message_at DESC, c.created_at DESC
         LIMIT #{size} OFFSET #{offset}
@@ -76,7 +76,7 @@
     </update>
 
     <select id="countParticipant" resultType="int">
-        SELECT COUNT(*) FROM conversation WHERE id = #{conversationId} AND (tenant_id = #{userId} OR landlord_id = #{userId})
+        SELECT COUNT(*) FROM conversation WHERE id = #{conversationId} AND (tenant_id = #{userId} OR agent_id = #{userId})
     </select>
 
 </mapper>

@@ -107,8 +107,8 @@ function toggleVideo(event: Event) {
           <span v-for="item in house.amenities" :key="item" class="amenity-chip">{{ item }}</span>
         </div>
       </div>
-      <button class="ask-landlord-btn" @click.stop="emit('chat', house.id)">
-        💬 问房东
+      <button class="ask-agent-btn" @click.stop="emit('chat', house.id)">
+        💬 问中介
       </button>
     </div>
   </article>

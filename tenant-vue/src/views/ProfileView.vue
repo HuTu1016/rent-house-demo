@@ -2,15 +2,26 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import HouseCard from '../components/HouseCard.vue'
-import ModalShell from '../components/ModalShell.vue'
 import { useRentalStore } from '../stores/rental'
-const store = useRentalStore(); const router = useRouter(); const dialog = ref<'repair' | 'bills' | 'contract' | 'review' | null>(null); const repairType = ref('家电损坏 (空调/热水器等)'); const repairDescription = ref(''); const review = ref('房源与照片一致，房东回复很及时，入住办理顺利。'); const score = ref(5)
+import type { TenantIdentity } from '../types'
+
+const store = useRentalStore()
+const router = useRouter()
+const editing = ref(false)
+const form = ref<TenantIdentity>({ ...store.identity })
 const recommendations = computed(() => [...new Set([...store.favorites, ...store.history])].map(store.getHouse).filter(Boolean).slice(0, 6))
-function submitRepair() { if (store.submitRepair(repairType.value, repairDescription.value)) { repairDescription.value = ''; dialog.value = null } }; function submitReview() { if (store.submitReview(score.value, review.value)) dialog.value = null }; function openHouse(id: number) { store.openHouse(id); router.push(`/house/${id}`) }
+function openHouse(id: number) { store.openHouse(id); router.push(`/house/${id}`) }
+function edit() { form.value = { ...store.identity }; editing.value = true }
+function save() { store.updateIdentity(form.value); editing.value = false }
 </script>
-<template><section class="page profile-page"><header class="profile-header"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120" alt="头像"/><div><h1>胡图 <small>♂</small></h1><p>微信已授权</p></div><span>›</span></header><section class="service-panel"><h2>功能中心</h2><div class="service-grid"><button @click="dialog = 'repair'">🛠️<span>故障报修</span></button><button @click="dialog = 'contract'">📖<span>租房合同</span></button><button @click="router.push('/wishlist')">☆<span>我的收藏</span></button><button @click="router.push('/wishlist?tab=history')">◷<span>浏览足迹</span></button><button @click="dialog = 'review'">✎<span>评价反馈</span></button><button @click="dialog = 'bills'">🧾<span>月账单</span></button></div></section><section class="recommendations"><h2>猜你想看</h2><HouseCard v-for="house in recommendations" :key="house!.id" :house="house!" @open="openHouse" @chat="id => router.push(`/messages/${id}`)" /></section><button class="logout" @click="store.notify('已安全退出登录')">退出登录</button>
-  <ModalShell v-if="dialog === 'bills'" @close="dialog = null"><h2>🧾 我的月度账单档案</h2><article v-for="bill in store.bills" :key="bill.id" class="bill-card"><b>{{ bill.month }} 账单</b><p>{{ bill.houseName }}</p><strong>¥{{ (bill.amountCents / 100).toFixed(2) }} · {{ bill.status === 'paid' ? '已支付' : bill.status === 'pending_verification' ? '待核销' : '待支付' }}</strong><small>{{ bill.breakdown }}</small><button v-if="bill.status === 'pending_payment'" class="modal-primary" @click="store.reportPaid(bill.id)">我已线下付款，通知房东核销</button></article></ModalShell>
-  <ModalShell v-if="dialog === 'repair'" @close="dialog = null"><h2>🛠️ 图文故障报修申请</h2><label>故障类型<select v-model="repairType"><option>家电损坏 (空调/热水器等)</option><option>水管道 / 线路漏水故障</option><option>门锁 / 门窗设施损坏</option></select></label><label>现场描述<textarea v-model="repairDescription" placeholder="请详细描述损坏情况..."></textarea></label><button class="modal-primary" @click="submitRepair">提交报修申请</button><h3>我的报修进度</h3><div v-for="ticket in store.tickets" :key="ticket.id" class="ticket-row"><b>#{{ ticket.id }} {{ ticket.type }}</b><span>{{ store.ticketLabel(ticket.status) }}</span><small>{{ ticket.assignee ? `维修人：${ticket.assignee}` : ticket.description }}</small><button v-if="ticket.status === 'awaiting_confirmation'" @click="store.confirmRepair(ticket.id)">确认已修复</button></div></ModalShell>
-  <ModalShell v-if="dialog === 'contract'" @close="dialog = null"><h2>📄 我的电子租房合同</h2><article class="contract-card"><b>合同编号 FLG-1-2026</b><p>承租房源：340-水斗老围村电梯大两房一厅</p><p>合同周期：2026-03-01 至 2027-02-28</p><p>月租金：¥2,900 · 押一付一</p><button @click="store.notify('电子合同 PDF 已生成，可随时查看')">查看电子合同</button><button class="danger" @click="store.notify('退租申请已提交，房东正在安排验房与押金结算')">申请退租</button></article></ModalShell>
-  <ModalShell v-if="dialog === 'review'" @close="dialog = null"><h2>⭐ 评价本次租住服务</h2><label>服务评分<select v-model="score"><option :value="5">5 分 · 非常满意</option><option :value="4">4 分 · 满意</option><option :value="3">3 分 · 一般</option></select></label><label>评价内容<textarea v-model="review"></textarea></label><button class="modal-primary" @click="submitReview">提交评价</button></ModalShell>
-</section></template>
+
+<template>
+  <section class="page profile-page">
+    <header class="profile-header"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120" alt="头像"/><div><h1>租客资料</h1><p>{{ store.identity.realName || '未完善身份资料' }}</p></div><button @click="edit">编辑</button></header>
+    <section class="service-panel"><h2>身份资料</h2><div class="identity-summary"><p><b>姓名</b><span>{{ store.identity.realName || '未填写' }}</span></p><p><b>手机号</b><span>{{ store.identity.mobile || '未填写' }}</span></p><p><b>身份证</b><span>{{ store.identity.idNumber ? `${store.identity.idNumber.slice(0, 3)}***********${store.identity.idNumber.slice(-4)}` : '未填写' }}</span></p><p><b>家庭住址</b><span>{{ store.identity.homeAddress || '选填' }}</span></p><p><b>公司信息</b><span>{{ store.identity.companyName || '选填' }}{{ store.identity.companyAddress ? ` · ${store.identity.companyAddress}` : '' }}</span></p></div></section>
+    <section class="service-panel"><h2>快捷入口</h2><div class="service-grid"><button @click="router.push('/wishlist')">☆<span>我的收藏</span></button><button @click="router.push('/wishlist?tab=history')">◷<span>浏览足迹</span></button><button @click="router.push('/messages')">💬<span>咨询消息</span></button></div></section>
+    <section class="recommendations"><h2>猜你想看</h2><HouseCard v-for="house in recommendations" :key="house!.id" :house="house!" @open="openHouse" @chat="id => router.push(`/messages/${id}`)" /></section>
+    <button class="logout" @click="store.notify('演示账号已退出')">退出登录</button>
+    <div v-if="editing" class="filter-backdrop" @click.self="editing = false"><form class="filter-panel identity-form" @submit.prevent="save"><h2>完善身份资料</h2><label>姓名<input v-model="form.realName" required></label><label>身份证号<input v-model="form.idNumber" pattern="^\d{17}[\dXx]$" required></label><label>手机号<input v-model="form.mobile" pattern="^1\d{10}$" required></label><label>家庭住址（选填）<input v-model="form.homeAddress"></label><label>公司名称（选填）<input v-model="form.companyName"></label><label>公司地址（选填）<input v-model="form.companyAddress"></label><div class="filter-actions"><button type="button" @click="editing = false">取消</button><button type="submit">保存</button></div></form></div>
+  </section>
+</template>
