@@ -1,4 +1,53 @@
 package com.renthouse.tenant.controller;
-import com.renthouse.auth.entity.*; import com.renthouse.auth.enums.*; import com.renthouse.auth.mapper.*; import com.renthouse.auth.service.*;import com.renthouse.common.api.*;import com.renthouse.common.exception.BusinessException;import jakarta.validation.Valid;import jakarta.validation.constraints.*;import java.util.*;import org.springframework.http.HttpStatus;import org.springframework.web.bind.annotation.*;
-@RestController @RequestMapping("/v1")public class TenantController{private final com.renthouse.tenant.service.TenantService s;public TenantController(com.renthouse.tenant.service.TenantService s){this.s=s;}@GetMapping("/tenant/home")public ApiResponse<Home>home(){return ApiResponse.ok(s.getHomeData());}@GetMapping("/tenant/profile")public ApiResponse<Profile>profile(){CurrentUser.requireRole(UserRole.TENANT);Profile p=s.getProfileData(CurrentUser.require().id());if(p==null)throw new BusinessException("USER_NOT_FOUND","用户不存在",HttpStatus.NOT_FOUND);return ApiResponse.ok(p);}@PatchMapping("/tenant/profile")public ApiResponse<Void>update(@RequestBody @Valid IdentityRequest r){CurrentUser.requireRole(UserRole.TENANT);s.updateIdentity(CurrentUser.require().id(),r);return ApiResponse.ok();}@GetMapping("/agent/tenants/{tenantId}/profile")public ApiResponse<Profile>agentProfile(@PathVariable long tenantId){CurrentUser.requireRole(UserRole.AGENT);Profile p=s.getTenantIdentityForAgent(CurrentUser.require().id(),tenantId);if(p==null)throw new BusinessException("TENANT_NOT_FOUND","租客资料不存在或无权查看",HttpStatus.NOT_FOUND);return ApiResponse.ok(p);}
- public record Special(String id,String title,int rentCent){}public record Home(java.util.List<Special>specials,java.util.Map<String,Long>stats){}public record Profile(String nickname,String avatarUrl,String mobile,String realName,String idNumberMasked,String homeAddress,String companyName,String companyAddress,long favorites,long histories){ }public record IdentityRequest(@NotBlank String realName,@Pattern(regexp="^\\d{17}[\\dXx]$",message="身份证号格式不正确")String idNumber,@Pattern(regexp="^1\\d{10}$",message="手机号格式不正确")String mobile,String homeAddress,String companyName,String companyAddress){}}
+
+import com.renthouse.auth.enums.UserRole;
+import com.renthouse.auth.service.CurrentUser;
+import com.renthouse.common.api.ApiResponse;
+import com.renthouse.common.exception.BusinessException;
+import com.renthouse.tenant.service.TenantService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/v1")
+public class TenantController {
+    private final TenantService service;
+
+    public TenantController(TenantService service) { this.service = service; }
+
+    @GetMapping("/tenant/home")
+    public ApiResponse<Home> home() { return ApiResponse.ok(service.getHomeData()); }
+
+    @GetMapping("/tenant/profile")
+    public ApiResponse<Profile> profile() {
+        CurrentUser.requireRole(UserRole.TENANT);
+        Profile profile = service.getProfileData(CurrentUser.require().id());
+        if (profile == null) throw new BusinessException("USER_NOT_FOUND", "用户不存在", HttpStatus.NOT_FOUND);
+        return ApiResponse.ok(profile);
+    }
+
+    @PatchMapping("/tenant/profile")
+    public ApiResponse<Void> update(@RequestBody @Valid IdentityRequest request) {
+        CurrentUser.requireRole(UserRole.TENANT);
+        service.updateIdentity(CurrentUser.require().id(), request);
+        return ApiResponse.ok();
+    }
+
+    @GetMapping("/agent/tenants/{tenantId}/profile")
+    public ApiResponse<Profile> agentProfile(@PathVariable long tenantId) {
+        CurrentUser.requireRole(UserRole.AGENT);
+        Profile profile = service.getTenantIdentityForAgent(CurrentUser.require().id(), tenantId);
+        if (profile == null) throw new BusinessException("TENANT_NOT_FOUND", "租客资料不存在或无权查看", HttpStatus.NOT_FOUND);
+        return ApiResponse.ok(profile);
+    }
+
+    public record Special(String id, String title, int rentCent) { }
+    public record Home(java.util.List<Special> specials, java.util.Map<String, Long> stats) { }
+    public record Profile(String nickname, String avatarUrl, String mobile, String realName, String homeAddress, long favorites, long histories) { }
+    public record IdentityRequest(@NotBlank(message = "姓名不能为空") String realName,
+                                  @NotBlank(message = "手机号不能为空") @Pattern(regexp = "^1\\d{10}$", message = "手机号格式不正确") String mobile,
+                                  String homeAddress) { }
+}

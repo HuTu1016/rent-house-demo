@@ -1,0 +1,10 @@
+-- 租客资料仅保留姓名、手机号和可选住址；手机号统一使用 sys_user.mobile。
+ALTER TABLE tenant_identity_profile
+    DROP COLUMN id_number_cipher,
+    DROP COLUMN id_number_masked,
+    DROP COLUMN mobile_cipher,
+    DROP COLUMN mobile_hash,
+    DROP COLUMN company_name,
+    DROP COLUMN company_address,
+    DROP COLUMN emergency_contact,
+    DROP COLUMN emergency_mobile_cipher;

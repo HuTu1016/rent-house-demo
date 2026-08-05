@@ -140,11 +140,59 @@ button {
   letter-spacing: -0.4px;
 }
 
+.store-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.store-title-row h1 {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.platform-badge {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 6px;
+  color: #9a6900;
+  background: #ffd52f;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .store-header p {
   font-size: 11px;
   color: var(--muted);
   margin: 5px 0 0;
 }
+
+.community-invite {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 82px;
+  margin: 12px -16px 14px;
+  padding: 12px 18px;
+  background: #fff;
+  border: 1px solid #f0f0f2;
+  border-radius: 17px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .06);
+}
+
+.community-icon { position: relative; width: 25px; height: 25px; flex: 0 0 25px; display: grid; place-items: center; border-radius: 8px; color: transparent; background: #12c66a; font-size: 0; }
+.community-icon::before { content: ''; width: 13px; height: 10px; border-radius: 4px; background: #fff; }
+.community-icon::after { content: ''; position: absolute; left: 7px; bottom: 5px; width: 4px; height: 4px; border-radius: 1px; background: #fff; transform: skewY(-28deg); }
+.community-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }
+.community-copy strong { overflow: hidden; font-size: 14px; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+.community-copy span { overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1; white-space: nowrap; }
+.community-copy i { display: inline-grid; width: 18px; height: 18px; margin-right: -5px; place-items: center; border: 1px solid #fff; border-radius: 50%; background: #6674b5; color: transparent; vertical-align: middle; }
+.community-copy i:nth-child(2) { background: #d18a70; }
+.community-copy i:nth-child(3) { background: #292d3d; }
+.community-copy i:nth-child(4) { background: #c9cdd7; }
+.community-invite > button { flex: 0 0 auto; min-width: 84px; padding: 10px 13px; border: 0; border-radius: 20px; color: #fff; background: #087cf5; box-shadow: 0 4px 12px rgba(0, 122, 255, .25); font-size: 13px; font-weight: 800; white-space: nowrap; }
 
 
 /* 特价置顶区 */
@@ -175,6 +223,9 @@ button {
   padding-bottom: 5px;
   scrollbar-width: none;
 }
+
+.special-zone { margin: 0 0 15px; padding: 11px 13px 10px; border: 1px solid #ffe1bb; border-radius: 18px; background: #fffaf3; }
+.special-zone .section-heading { margin: 0 0 10px; }
 .special-scroll::-webkit-scrollbar {
   display: none;
 }
@@ -240,8 +291,10 @@ button {
   display: flex;
   gap: 7px;
   position: relative;
-  z-index: 11;
+  z-index: 32;
 }
+
+.filter-shell { position: relative; z-index: 30; }
 
 .filters button {
   flex: 1;
@@ -252,8 +305,15 @@ button {
   font-size: 12px;
   font-weight: 500;
   color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   transition: all 0.2s ease;
 }
+
+.filters button b { color: #86868b; font-size: 17px; font-weight: 500; line-height: .55; transform: translateY(-2px); }
+.filters button.selected b { color: var(--blue); transform: rotate(180deg) translateY(-2px); }
 
 .filters button.selected, .filters button.active {
   color: var(--blue);
@@ -264,22 +324,23 @@ button {
 .filter-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  z-index: 20;
   background: rgba(0, 0, 0, .35);
 }
 
 .filter-panel {
   position: absolute;
-  top: 150px;
+  top: calc(100% + 12px);
   left: 0;
   right: 0;
   padding: 16px;
   background: #fff;
-  border-radius: 0 0 16px 16px;
+  border-radius: 18px;
   display: flex;
   gap: 9px;
   flex-wrap: wrap;
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  z-index: 31;
 }
 
 .pill {
@@ -336,8 +397,11 @@ button {
 
 .ios-house-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   background: #ffffff;
-  margin: 0 -16px 12px -16px;
+  margin: 0 0 14px;
   padding: 12px 16px;
   border-bottom: 8px solid #f5f5f7;
   cursor: pointer;
@@ -414,6 +478,14 @@ button {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform .25s ease;
+}
+
+.ios-hero-main:hover img,
+.ios-hero-main:hover video,
+.ios-hero-sub-item:hover img,
+.ios-hero-sub-item:hover video {
+  transform: scale(1.04);
 }
 
 .ios-hero-sub {
@@ -577,7 +649,7 @@ button {
 .ios-house-desc {
   font-size: 12px;
   color: #424245;
-  margin-top: 4px;
+  margin-top: 2px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -597,7 +669,7 @@ button {
 .left-tags {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   overflow: hidden;
   flex: 1;
 }
@@ -678,6 +750,29 @@ button {
   padding: 8px 16px;
   font-weight: 700;
 }
+
+.load-more-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.load-more-done { min-height: 42px; color: #b1b1b6; }
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e1e1e6;
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: loading-spin .7s linear infinite;
+}
+
+@keyframes loading-spin { to { transform: rotate(360deg); } }
 
 /* 详情页及其它视图 */
 .page-title {
@@ -1369,4 +1464,23 @@ button {
   .tenant-app {
     box-shadow: 0 0 50px rgba(0, 0, 0, .15);
   }
+}
+
+@media (max-width: 359px) {
+  .page { padding-left: 12px; padding-right: 12px; }
+  .store-header { margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; }
+  .community-invite { gap: 7px; padding: 10px 12px; }
+  .community-invite > button { min-width: 76px; padding: 8px 8px; font-size: 11px; }
+  .community-copy strong { font-size: 11px; }
+  .store-title-row { gap: 4px; }
+  .store-title-row h1 { font-size: 16px; }
+  .platform-badge { padding: 3px 5px; font-size: 9px; }
+  .filters { gap: 5px; }
+  .filters button { font-size: 11px; padding-left: 2px; padding-right: 2px; }
+  .filter-panel { padding: 12px; gap: 7px; }
+  .pill { padding: 7px 9px; font-size: 11px; }
+}
+
+@media (min-width: 431px) {
+  .tenant-app { min-height: 100vh; }
 }

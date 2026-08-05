@@ -5,15 +5,16 @@ import type { House } from '../types'
 const props = defineProps<{ house: House; compareMode?: boolean; checked?: boolean }>()
 const emit = defineEmits<{ open: [id: number]; chat: [id: number]; compare: [id: number] }>()
 
-const isSpecial = computed(() => Boolean(props.house.specialPriceCents))
+const isSpecial = computed(() => Boolean(props.house.specialPriceCents && props.house.specialPriceCents < props.house.priceCents))
 const displayPrice = computed(() => (props.house.specialPriceCents ?? props.house.priceCents) / 100)
 const originalPrice = computed(() => props.house.priceCents / 100)
+const fallbackImage = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800'
 
 const mediaItems = computed(() => {
-  const list = props.house.media || []
+  const list = (props.house.media || []).filter(item => Boolean(item.url))
   if (list.length >= 3) return list
   const fallback = [
-    { type: 'image' as const, url: props.house.image || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400' },
+    { type: 'image' as const, url: props.house.image || fallbackImage },
     { type: 'image' as const, url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400' },
     { type: 'image' as const, url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400' }
   ]
@@ -21,11 +22,11 @@ const mediaItems = computed(() => {
 })
 
 const badgeText = computed(() => {
-  if (props.house.specialPriceCents) {
+  if (props.house.specialPriceCents && props.house.specialPriceCents < props.house.priceCents) {
     const diff = (props.house.priceCents - props.house.specialPriceCents) / 100
     return `🔥 特价立省¥${diff}`
   }
-  return props.house.tags[0] ? `📍 ${props.house.tags[0]}` : '✨ 热门真实房源'
+  return props.house.tags[0] ? `📍 ${props.house.tags[0]}` : '✨ 精选推荐'
 })
 
 function toggleVideo(event: Event) {
@@ -35,6 +36,13 @@ function toggleVideo(event: Event) {
   if (video) {
     video.paused ? video.play() : video.pause()
   }
+}
+
+function replaceImage(event: Event) {
+  const image = event.currentTarget as HTMLImageElement
+  if (image.dataset.fallback === 'true') { image.style.visibility = 'hidden'; return }
+  image.dataset.fallback = 'true'
+  image.src = fallbackImage
 }
 </script>
 
@@ -58,7 +66,7 @@ function toggleVideo(event: Event) {
           <div class="ios-video-play-btn">▶</div>
         </template>
         <template v-else>
-          <img :src="mediaItems[0].url || house.image" alt="房源主图" />
+          <img :src="mediaItems[0].url || house.image" alt="房源主图" loading="eager" decoding="async" @error="replaceImage" />
         </template>
         <div class="ios-img-badge">{{ badgeText }}</div>
       </div>
@@ -67,12 +75,12 @@ function toggleVideo(event: Event) {
       <div class="ios-hero-sub">
         <div class="ios-hero-sub-item" @click="toggleVideo">
           <video v-if="mediaItems[1].type === 'video'" :src="mediaItems[1].url" :poster="mediaItems[1].poster" autoplay loop muted playsinline></video>
-          <img v-else :src="mediaItems[1].url" alt="副图1" />
+          <img v-else :src="mediaItems[1].url" alt="副图1" loading="lazy" decoding="async" @error="replaceImage" />
           <div v-if="mediaItems[1].type === 'video'" class="ios-video-play-btn sub-play">▶</div>
         </div>
         <div class="ios-hero-sub-item" @click="toggleVideo">
           <video v-if="mediaItems[2].type === 'video'" :src="mediaItems[2].url" :poster="mediaItems[2].poster" autoplay loop muted playsinline></video>
-          <img v-else :src="mediaItems[2].url" alt="副图2" />
+          <img v-else :src="mediaItems[2].url" alt="副图2" loading="lazy" decoding="async" @error="replaceImage" />
           <div v-if="mediaItems[2].type === 'video'" class="ios-video-play-btn sub-play">▶</div>
         </div>
       </div>
@@ -108,7 +116,7 @@ function toggleVideo(event: Event) {
         </div>
       </div>
       <button class="ask-agent-btn" @click.stop="emit('chat', house.id)">
-        💬 问中介
+        💬 问房东
       </button>
     </div>
   </article>

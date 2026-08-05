@@ -3,7 +3,7 @@ import type { Appointment, ChatMessage, House, TenantIdentity } from '../types'
 type ApiEnvelope<T> = { code: string; message: string; data: T }
 type Page<T> = { records: T[]; total: number; page: number; size: number; hasNext: boolean }
 
-const baseUrl = String(import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api/v1').replace(/\/$/, '')
+const baseUrl = String(import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8090/api/v1').replace(/\/$/, '')
 const tokenKey = 'rent-house-access-token'
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -52,11 +52,12 @@ export type ApiDetail = { listing: ApiListing; description: string; facilities: 
 export type ApiConversation = { id: string; listingId: string; listingTitle?: string; lastMessagePreview?: string }
 export type ApiMessage = { id: string; senderId: string; messageType?: string; content: string; appointmentId?: string; createdAt: string; mine: boolean }
 export type ApiAppointment = { id: string; listingId: string; scheduledAt: string; status: string }
-export type ApiProfile = { nickname: string; avatarUrl?: string; mobile?: string; realName?: string; idNumberMasked?: string; homeAddress?: string; companyName?: string; companyAddress?: string; favorites: number; histories: number }
+export type ApiProfile = { nickname: string; avatarUrl?: string; mobile?: string; realName?: string; homeAddress?: string; favorites: number; histories: number }
 
 export function mapListing(item: ApiListing): House {
   const room = item.roomCount > 0 ? `${item.roomCount}房${item.hallCount}厅` : '单间'
-  return { id: Number(item.id), name: item.title, layout: `${room} · ${item.areaSqm}㎡`, type: '整租', priceCents: item.rentCent, specialPriceCents: item.special ? item.rentCent : undefined, status: 'vacant', image: item.coverUrl, media: [{ type: 'image', url: item.coverUrl }], tags: item.tags ?? [], amenities: [], description: '' }
+  const cover = item.coverUrl || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800'
+  return { id: Number(item.id), name: item.title, layout: `${room} · ${item.areaSqm}㎡`, type: '整租', priceCents: item.rentCent, specialPriceCents: item.special ? item.rentCent : undefined, status: 'vacant', image: cover, media: [{ type: 'image', url: cover }], tags: item.tags ?? [], amenities: [], description: '' }
 }
 
 export function mapAppointment(item: ApiAppointment): Appointment { const date = item.scheduledAt.replace('T', ' '); return { id: Number(item.id), houseId: Number(item.listingId), date: date.slice(0, 10), time: date.slice(11, 16), status: item.status.toLowerCase() as Appointment['status'] } }

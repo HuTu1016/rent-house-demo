@@ -27,10 +27,10 @@
         <include refid="searchConditions"/>
     </select>
 
-    <select id="searchListings" resultType="com.renthouse.listing.vo.ListingView">
-        SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
+    <select id="searchListings" resultType="map">
+        SELECT CAST(l.id AS CHAR) AS id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
                u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
-               l.tags_json AS tagsJson, l.is_special AS isSpecial,
+               l.tags_json AS tagsJson,
                (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id ORDER BY m.sort_no LIMIT 1) AS coverUrl,
                <choose>
                    <when test="tenantId != null">
@@ -39,7 +39,8 @@
                    <otherwise>
                        0 AS favorite
                    </otherwise>
-               </choose>
+               </choose>,
+               l.is_special AS special
         FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
         <include refid="searchConditions"/>
         ORDER BY ${orderBy}
@@ -86,12 +87,13 @@
         SELECT COUNT(*) FROM ${table} WHERE tenant_id = #{tenantId}
     </select>
 
-    <select id="listHistoryOrFavorite" resultType="com.renthouse.listing.vo.ListingView">
-        SELECT l.id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
+    <select id="listHistoryOrFavorite" resultType="map">
+        SELECT CAST(l.id AS CHAR) AS id, l.title, l.community_name AS communityName, l.district, l.address, l.rent_cent AS rentCent, l.deposit_cent AS depositCent,
                u.room_count AS roomCount, u.hall_count AS hallCount, u.bathroom_count AS bathroomCount, u.area_sqm AS areaSqm, u.orientation,
-               l.tags_json AS tagsJson, l.is_special AS isSpecial,
+               l.tags_json AS tagsJson,
                (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id ORDER BY m.sort_no LIMIT 1) AS coverUrl,
-               1 AS favorite
+               1 AS favorite,
+               l.is_special AS special
         FROM ${table} r
         JOIN house_listing l ON l.id = r.listing_id
         JOIN property_unit u ON u.id = l.unit_id

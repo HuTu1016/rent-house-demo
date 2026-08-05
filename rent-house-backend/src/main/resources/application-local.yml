@@ -11,6 +11,18 @@ spring:
       password: ${REDIS_PASSWORD:}
   jpa:
     show-sql: true
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,public/**
+      poll-interval: 1000ms
+      quiet-period: 500ms
+    livereload:
+      enabled: true
 logging:
   level:
     com.renthouse: DEBUG
+app:
+  errors:
+    include-details: true

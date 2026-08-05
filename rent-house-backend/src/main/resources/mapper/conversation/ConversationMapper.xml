@@ -3,7 +3,7 @@
 <mapper namespace="com.renthouse.conversation.mapper.ConversationMapper">
 
     <select id="getAgentIdByListing" resultType="java.lang.Long">
-        SELECT agent_id FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
+        SELECT l.agent_id FROM house_listing l JOIN property_unit u ON u.id = l.unit_id
         WHERE l.id = #{listingId} AND l.publish_status = 'PUBLISHED' AND u.occupancy_status = 'VACANT'
     </select>
 
@@ -30,6 +30,7 @@
 
     <select id="countConversations" resultType="long">
         SELECT COUNT(*) FROM conversation c WHERE ${ownerColumn} = #{userId}
+          AND c.last_message_preview IS NOT NULL AND TRIM(c.last_message_preview) &lt;&gt; ''
     </select>
 
     <select id="listConversations" resultType="com.renthouse.conversation.vo.ConversationView">
@@ -43,6 +44,7 @@
         JOIN sys_user tt ON tt.id = c.tenant_id
         JOIN sys_user lt ON lt.id = c.agent_id
         WHERE ${ownerColumn} = #{userId}
+          AND c.last_message_preview IS NOT NULL AND TRIM(c.last_message_preview) &lt;&gt; ''
         ORDER BY c.last_message_at DESC, c.created_at DESC
         LIMIT #{size} OFFSET #{offset}
     </select>

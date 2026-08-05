@@ -5,6 +5,8 @@ import com.renthouse.tenant.controller.TenantController.Profile;
 import com.renthouse.tenant.controller.TenantController.IdentityRequest;
 import com.renthouse.tenant.mapper.TenantMapper;
 import com.renthouse.tenant.service.TenantService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
@@ -20,6 +22,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    @Cacheable(cacheNames = "tenantHome", key = "'home'")
     public Home getHomeData() {
         Map<String, Long> stats = new LinkedHashMap<>();
         stats.put("published", mapper.countPublishedListings());
@@ -33,14 +36,16 @@ public class TenantServiceImpl implements TenantService {
         if (p != null) {
             long favorites = mapper.countFavorites(tenantId);
             long histories = mapper.countHistories(tenantId);
-            return new Profile(p.nickname(), p.avatarUrl(), p.mobile(), p.realName(), p.idNumberMasked(), p.homeAddress(), p.companyName(), p.companyAddress(), favorites, histories);
+            return new Profile(p.nickname(), p.avatarUrl(), p.mobile(), p.realName(), p.homeAddress(), favorites, histories);
         }
         return null;
     }
 
     @Override
+    @Transactional
     public void updateIdentity(long tenantId, IdentityRequest request) {
-        mapper.updateIdentity(tenantId, request);
+        mapper.updateUserMobile(tenantId, request.mobile());
+        mapper.upsertIdentity(tenantId, request);
     }
 
     @Override

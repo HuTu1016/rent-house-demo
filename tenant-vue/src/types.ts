@@ -6,4 +6,4 @@ export interface House { id: number; name: string; layout: string; type: string;
 export interface Appointment { id: number; houseId: number; date: string; time: string; status: AppointmentStatus }
 export interface ChatMessage { id: number; sender: 'tenant' | 'agent'; type: 'text' | 'appointment'; text?: string; appointmentId?: number }
 export interface FilterState { location: string; layout: string; features: string[]; sort: 'default' | 'priceAsc' | 'priceDesc' | 'hot' | 'newest' }
-export interface TenantIdentity { realName: string; idNumber: string; mobile: string; homeAddress: string; companyName: string; companyAddress: string }
+export interface TenantIdentity { realName: string; mobile: string; homeAddress: string }

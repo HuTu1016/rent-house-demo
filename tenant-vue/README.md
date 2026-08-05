@@ -18,7 +18,7 @@ Pinia Store 只负责页面状态和接口结果缓存；API 地址通过 `VITE_
 复制 `.env.example` 为 `.env.local` 后启动后端和前端：
 
 ```bash
-VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_BASE_URL=http://localhost:8090/api/v1
 VITE_TENANT_MOBILE=租客账号手机号
 VITE_TENANT_PASSWORD=租客账号密码
 ```

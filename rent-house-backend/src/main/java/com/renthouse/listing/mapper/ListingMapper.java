@@ -15,7 +15,7 @@ public interface ListingMapper {
 
     long countListings(@Param("query") SearchQuery query);
 
-    List<ListingView> searchListings(@Param("query") SearchQuery query, @Param("tenantId") Long tenantId, @Param("offset") int offset, @Param("size") int size, @Param("orderBy") String orderBy);
+    List<Map<String, Object>> searchListings(@Param("query") SearchQuery query, @Param("tenantId") Long tenantId, @Param("offset") int offset, @Param("size") int size, @Param("orderBy") String orderBy);
 
     Map<String, Object> getListingDetail(@Param("listingId") long listingId, @Param("tenantId") Long tenantId);
 
@@ -29,7 +29,7 @@ public interface ListingMapper {
 
     long countHistoryOrFavorite(@Param("table") String table, @Param("tenantId") long tenantId);
 
-    List<ListingView> listHistoryOrFavorite(@Param("table") String table, @Param("timeColumn") String timeColumn, @Param("tenantId") long tenantId, @Param("offset") int offset, @Param("size") int size);
+    List<Map<String, Object>> listHistoryOrFavorite(@Param("table") String table, @Param("timeColumn") String timeColumn, @Param("tenantId") long tenantId, @Param("offset") int offset, @Param("size") int size);
 
     void upsertHistory(@Param("id") long id, @Param("tenantId") long tenantId, @Param("listingId") long listingId, @Param("viewedAt") LocalDateTime viewedAt);
 }

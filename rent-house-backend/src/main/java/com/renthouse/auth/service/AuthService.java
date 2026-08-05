@@ -52,5 +52,27 @@ public class AuthService {
         return new TokenView(jwtService.createAccessToken(user), jwtService.createRefreshToken(user), "Bearer", user.getId().toString(), user.getRole().name(), user.getNickname());
     }
     
-    public record TokenView(String accessToken, String refreshToken, String tokenType, String userId, String role, String nickname) { }
+    /**
+     * 认证 Token 响应视图
+     */
+    @io.swagger.v3.oas.annotations.media.Schema(description = "认证 Token 及基本用户信息视图")
+    public record TokenView(
+            @io.swagger.v3.oas.annotations.media.Schema(description = "访问令牌 Access Token (JWT)", example = "eyJhbGciOiJIUzI1NiJ9...")
+            String accessToken,
+
+            @io.swagger.v3.oas.annotations.media.Schema(description = "刷新令牌 Refresh Token (JWT)", example = "eyJhbGciOiJIUzI1NiJ9...")
+            String refreshToken,
+
+            @io.swagger.v3.oas.annotations.media.Schema(description = "Token 类型", example = "Bearer")
+            String tokenType,
+
+            @io.swagger.v3.oas.annotations.media.Schema(description = "用户 ID", example = "10086")
+            String userId,
+
+            @io.swagger.v3.oas.annotations.media.Schema(description = "角色身份 (TENANT: 租客, AGENT: 经纪人/中介)", example = "TENANT")
+            String role,
+
+            @io.swagger.v3.oas.annotations.media.Schema(description = "用户昵称", example = "张三")
+            String nickname
+    ) { }
 }
