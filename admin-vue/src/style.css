@@ -1,0 +1,118 @@
+:root {
+  --apple-bg: #f4f5f7;
+  --apple-surface: #ffffff;
+  --apple-text: #1a1a1a;
+  --apple-muted: #71717a;
+  --apple-border: #e4e4e7;
+  
+  /* 宝塔风深灰侧边栏 + 鲜绿主色 */
+  --sidebar-bg: #283039;
+  --sidebar-border: #20262e;
+  --sidebar-text: #a0aec0;
+  --sidebar-hover: #1f252d;
+  --sidebar-active-bg: #1d242c;
+  
+  --accent-green: #20a53a;
+  --accent-green-hover: #19882f;
+  --accent-green-light: #e6f7ec;
+  --accent-green-border: #b7ebc6;
+
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  color: var(--apple-text);
+  background: var(--apple-bg);
+}
+
+body { 
+  margin: 0; 
+  padding: 0; 
+  -webkit-font-smoothing: antialiased; 
+  background-color: var(--apple-bg);
+}
+
+* { 
+  box-sizing: border-box; 
+}
+
+a { 
+  color: var(--apple-text); 
+  text-decoration: none; 
+}
+
+button { 
+  font-family: inherit; 
+  cursor: pointer; 
+  border: none; 
+}
+
+input, select, textarea { 
+  font-family: inherit; 
+}
+
+/* Global Utilities */
+.glass-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--apple-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.card {
+  background: var(--apple-surface);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  border: 1px solid var(--apple-border);
+}
+
+/* 按钮 - 绿色活力与极简融合 */
+.btn-primary {
+  background: var(--accent-green);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--accent-green);
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(32, 165, 58, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--accent-green-hover);
+  border-color: var(--accent-green-hover);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--apple-text);
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--apple-border);
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+input.apple-input {
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+  color: var(--apple-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input.apple-input:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(32, 165, 58, 0.12);
+}
