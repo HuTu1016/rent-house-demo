@@ -4,7 +4,7 @@ import type { Appointment, ChatMessage, FilterState, House, TenantIdentity } fro
 import * as api from '../services/api'
 import { preloadImages } from '../utils/imageCache'
 
-const clone = <T>(value: T): T => structuredClone(value)
+const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value))
 const initialFilter: FilterState = { location: 'all', layout: 'all', features: [], sort: 'default' }
 const listingCacheTtl = 30_000
 const detailCacheTtl = 60_000
@@ -90,7 +90,10 @@ export const useRentalStore = defineStore('rental', () => {
       favorites.value = favoritePage.records.map(item => Number(item.id)); history.value = historyPage.records.map(item => Number(item.id)); appointments.value = appointmentPage.records.map(api.mapAppointment)
       identity.value = { realName: profile.realName ?? '', mobile: profile.mobile ?? '', homeAddress: profile.homeAddress ?? '' }
       connectionError.value = ''
-    } catch (error) { connectionError.value = error instanceof Error ? error.message : '后端服务暂不可用'; notify(connectionError.value) }
+    } catch (error) {
+      connectionError.value = error instanceof Error ? error.message : '后端服务暂不可用'
+      notify(connectionError.value)
+    }
   }
   async function loadMore() {
     if (!hasMore.value || loadingMore.value) return
