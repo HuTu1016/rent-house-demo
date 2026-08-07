@@ -36,7 +36,7 @@ public class TenantServiceImpl implements TenantService {
         if (p != null) {
             long favorites = mapper.countFavorites(tenantId);
             long histories = mapper.countHistories(tenantId);
-            return new Profile(p.nickname(), p.avatarUrl(), p.mobile(), p.realName(), p.homeAddress(), favorites, histories);
+            return new Profile(p.nickname(), p.avatarUrl(), p.mobile(), p.realName(), favorites, histories);
         }
         return null;
     }

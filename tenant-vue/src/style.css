@@ -62,7 +62,7 @@ button {
   transform: translateX(-50%);
   width: 100%;
   max-width: 430px;
-  height: 64px;
+  height: calc(56px + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(25px) saturate(180%);
@@ -781,23 +781,37 @@ button {
 
 .two-tabs {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 60px;
   background: #fff;
   margin: 0 -16px;
-  padding: 12px;
+  padding: 18px 16px 12px;
 }
 
 .two-tabs button {
   border: 0;
   background: transparent;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 16px;
   color: var(--muted);
-  padding-bottom: 7px;
+  padding-bottom: 8px;
+  position: relative;
 }
 
 .two-tabs button.active {
   color: var(--text);
-  border-bottom: 3px solid var(--yellow);
+}
+
+.two-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: var(--yellow);
+  border-radius: 2px;
 }
 
 .compare-bar {

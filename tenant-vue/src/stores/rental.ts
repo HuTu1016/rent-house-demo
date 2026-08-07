@@ -18,7 +18,7 @@ export const useRentalStore = defineStore('rental', () => {
   const compareList = ref<number[]>([])
   const filter = ref<FilterState>(clone(initialFilter))
   const appointments = ref<Appointment[]>([])
-  const identity = ref<TenantIdentity>({ realName: '', mobile: '', homeAddress: '' })
+  const identity = ref<TenantIdentity>({ realName: '', mobile: '' })
   const toast = ref('')
   const connectionError = ref('')
   const hasMore = ref(false)
@@ -88,7 +88,7 @@ export const useRentalStore = defineStore('rental', () => {
       activeListingParams.value = {}
       void preloadImages(houses.value.flatMap(house => [house.image, ...house.media.map(item => item.url)]), 12)
       favorites.value = favoritePage.records.map(item => Number(item.id)); history.value = historyPage.records.map(item => Number(item.id)); appointments.value = appointmentPage.records.map(api.mapAppointment)
-      identity.value = { realName: profile.realName ?? '', mobile: profile.mobile ?? '', homeAddress: profile.homeAddress ?? '' }
+      identity.value = { realName: profile.realName ?? '', mobile: profile.mobile ?? '' }
       connectionError.value = ''
     } catch (error) {
       connectionError.value = error instanceof Error ? error.message : '后端服务暂不可用'

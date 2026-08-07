@@ -20,7 +20,7 @@
 
     <select id="getUserProfile" resultType="com.renthouse.tenant.controller.TenantController$Profile">
         SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
-               i.real_name AS realName, i.home_address AS homeAddress,
+               i.real_name AS realName,
                0 AS favorites, 0 AS histories
         FROM sys_user u LEFT JOIN tenant_identity_profile i ON i.user_id = u.id
         WHERE u.id = #{id}
@@ -37,15 +37,15 @@
     <update id="updateUserMobile">UPDATE sys_user SET mobile=#{mobile}, updated_at=NOW(3) WHERE id=#{tenantId}</update>
 
     <update id="upsertIdentity">
-        INSERT INTO tenant_identity_profile(user_id, real_name, home_address, profile_status, created_at, updated_at)
-        VALUES(#{tenantId}, #{request.realName}, #{request.homeAddress}, 'COMPLETED', NOW(3), NOW(3))
-        ON DUPLICATE KEY UPDATE real_name=VALUES(real_name), home_address=VALUES(home_address),
+        INSERT INTO tenant_identity_profile(user_id, real_name, profile_status, created_at, updated_at)
+        VALUES(#{tenantId}, #{request.realName}, 'COMPLETED', NOW(3), NOW(3))
+        ON DUPLICATE KEY UPDATE real_name=VALUES(real_name),
             profile_status='COMPLETED', updated_at=NOW(3)
     </update>
 
     <select id="getTenantIdentityForAgent" resultType="com.renthouse.tenant.controller.TenantController$Profile">
         SELECT u.nickname, u.avatar_url AS avatarUrl, u.mobile,
-               i.real_name AS realName, i.home_address AS homeAddress,
+               i.real_name AS realName,
                0 AS favorites, 0 AS histories
         FROM sys_user u JOIN tenant_identity_profile i ON i.user_id = u.id
         WHERE u.id = #{tenantId} AND u.role = 'TENANT'

@@ -7,9 +7,27 @@ const tokenKey = 'admin-access-token'
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   headers.set('Content-Type', 'application/json')
-  const token = sessionStorage.getItem(tokenKey)
+  let token = sessionStorage.getItem(tokenKey)
+  if (!token && path !== '/auth/password/login') {
+    try {
+      await login()
+      token = sessionStorage.getItem(tokenKey)
+    } catch (_) {}
+  }
   if (token) headers.set('Authorization', `Bearer ${token}`)
-  const response = await fetch(`${baseUrl}${path}`, { ...init, headers })
+  let response = await fetch(`${baseUrl}${path}`, { ...init, headers })
+  if ((response.status === 401 || response.status === 403) && path !== '/auth/password/login') {
+    try {
+      await login()
+      token = sessionStorage.getItem(tokenKey)
+      if (token) {
+        const retryHeaders = new Headers(init.headers)
+        retryHeaders.set('Content-Type', 'application/json')
+        retryHeaders.set('Authorization', `Bearer ${token}`)
+        response = await fetch(`${baseUrl}${path}`, { ...init, headers: retryHeaders })
+      }
+    } catch (_) {}
+  }
   const body = (await response.json()) as ApiEnvelope<T>
   if (!response.ok || body.code !== 'OK') throw new Error(body.message || `请求失败(${response.status})`)
   return body.data
